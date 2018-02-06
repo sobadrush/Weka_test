@@ -6,6 +6,8 @@ import weka.attributeSelection.AttributeSelection;
 import weka.attributeSelection.InfoGainAttributeEval;
 import weka.attributeSelection.Ranker;
 import weka.classifiers.trees.J48;
+import weka.core.DenseInstance;
+import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.Utils;
 import weka.core.converters.ConverterUtils.DataSource;
@@ -16,6 +18,11 @@ import weka.gui.treevisualizer.TreeVisualizer;
 
 // 資料源： http://repository.seasr.org/Datasets/UCI/arff/
 public class Weka {
+
+	public static Instance setAnNewAnimal(double weight, double[] features) {
+		Instance myUnicorn = new DenseInstance(weight, features);
+		return myUnicorn;
+	}
 
 	public static void main(String[] args) {
 		try {
@@ -59,14 +66,30 @@ public class Weka {
 			/*
 			 * Visualize decision tree
 			 */
-			TreeVisualizer tv = new TreeVisualizer(null, tree.graph(),
-					new PlaceNode2());
+			TreeVisualizer tv = new TreeVisualizer(null, tree.graph(), new PlaceNode2());
 			JFrame frame = new javax.swing.JFrame("Tree Visualizer");
 			frame.setSize(800, 500);
 			frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 			frame.getContentPane().add(tv);
 			frame.setVisible(true);
 			tv.fitToScreen();
+
+			/*
+			 * 建立新物種特徵
+			 */
+			double weight = 1.0;
+			double[] features = new double[] {
+							1.0, 0.0, 0.0, 1.0, 0.0,
+							0.0, 0.0, 0.0, 1.0, 1.0,
+							1.0, 0.0, 4.0, 1.0, 1.0,
+							0.0
+			};
+			Instance myUnicorn = Weka.setAnNewAnimal(weight, features);
+			myUnicorn.setDataset(data);
+			double result = tree.classifyInstance(myUnicorn);
+			System.out.println("===========================================");
+			System.out.println("result : " + result);
+			System.out.println("class : " + data.classAttribute().value((int) result));
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
